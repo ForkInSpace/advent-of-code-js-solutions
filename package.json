@@ -1,0 +1,15 @@
+{
+  "name": "advent-of-code-js-solutions",
+  "version": "1.0.0",
+  "description": "coding challenge solutions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "adventOfCode"
+  ],
+  "author": "forkInSpace",
+  "license": "ISC",
+  "dependencies": {}
+}
