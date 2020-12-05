@@ -2,8 +2,8 @@ const fs = require('fs');
 
 (async function(){
   const rawInputs = await fetchInputs();
-  const inputArray = inputToArrayOfInts(rawInputs);
-  const res = compareNumbersInArr(inputArray);
+  const inputArray = inputToArray(rawInputs);
+  const res = validatePasswords(inputArray);
   console.log(res);
 })()
 
@@ -17,31 +17,25 @@ function fetchInputs() {
   })
 }
 
-function inputToArrayOfInts(content) {
-  return content.split('\n').map(i => +i);
+function inputToArray(content) {
+  return content.split('\n');
 }
 
-function compareNumbersInArr(args) {
-  const sorted = sortArr(args);
-  for (let i = 0; i < sorted.length; i++) {
-    for (let j = sorted.length - 1; j >= 0; j--) {
-      for (let k = 0; k < sorted.length; k++) {
-        if (sum(sorted[i], sorted[j], sorted[k]) == 2020) {
-          return multiply(sorted[i], sorted[j], sorted[k]);
-        }
-      }
-    }
-  }
+function validatePasswords(arr) {
+  return arr
+    .map(item => {
+      let range = item.split(' ')[0];
+      let char = item.split(':')[0].split(' ')[1];
+      let password = item.split(' ')[2];
+      console.log(range, char, password);
+
+      return tryMatch(password.trim(), char, range.split('-')[0], range.split('-')[1]);
+    })
+    .filter(item => !!item)
+    .length;
 }
 
-function sortArr(arr) {
-  return arr.sort();
-}
-
-function sum(val1, val2, val3) {
-  return val1 + val2 + val3;
-}
-
-function multiply(val1, val2, val3) {
-  return val1 * val2 * val3;
+function tryMatch(password, char, rangeStart, rangeEnd) {
+  const pattern = new RegExp(`^[^${char}]*(?:${char}[^${char}]*){${rangeStart},${rangeEnd}}$`)
+  return pattern.test(password);
 }
