@@ -2,10 +2,9 @@ const fs = require('fs');
 
 (async function(){
   const rawInputs = await fetchInputs();
-  const inputArray = inputToArray(rawInputs);
-  const fuels = calcFuelRequredByEachModule(inputArray);
-  const totalSum = sum(fuels);
-  console.log(totalSum);
+  const inputArray = inputToArrayOfInts(rawInputs);
+  const res = compareNumbersInArr(inputArray);
+  console.log(res);
 })()
 
 function fetchInputs() {
@@ -18,16 +17,29 @@ function fetchInputs() {
   })
 }
 
-function inputToArray(content) {
-    return content.split('\n');
+function inputToArrayOfInts(content) {
+  return content.split('\n').map(i => +i);
 }
 
-function calcFuelRequredByEachModule(args) {
-  return args.map(moduleMass => {
-    return Math.floor(moduleMass/3) - 2;
-  })
+function compareNumbersInArr(args) {
+  const sorted = sortArr(args);
+  for (let i = 0; i < sorted.length; i++) {
+    for (let j = sorted.length - 1; j >= 0; j--) {
+      if (sum(sorted[i], sorted[j]) == 2020) {
+        return multiply(sorted[i], sorted[j]);
+      }
+    }
+  }
 }
 
-function sum(moduleFuels) {
-  return moduleFuels.reduce((total, fuel) => total + fuel);
+function sortArr(arr) {
+  return arr.sort();
+}
+
+function sum(val1, val2) {
+  return val1 + val2;
+}
+
+function multiply(val1, val2) {
+  return val1 * val2;
 }
