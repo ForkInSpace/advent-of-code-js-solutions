@@ -50,7 +50,6 @@ const loopAndModify = (data) => {
     } else if (op == 99) {
       return allCodes[0];
     }
-    chunks = getCodeChunks([...allCodes]);
   }
 };
 
