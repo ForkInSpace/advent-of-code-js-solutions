@@ -27,7 +27,6 @@ function validatePasswords(arr) {
       let range = item.split(' ')[0];
       let char = item.split(':')[0].split(' ')[1];
       let password = item.split(' ')[2];
-      console.log(range, char, password);
 
       return tryMatch(password.trim(), char, range.split('-')[0], range.split('-')[1]);
     })
@@ -36,6 +35,11 @@ function validatePasswords(arr) {
 }
 
 function tryMatch(password, char, rangeStart, rangeEnd) {
-  const pattern = new RegExp(`^[^${char}]*(?:${char}[^${char}]*){${rangeStart},${rangeEnd}}$`)
-  return pattern.test(password);
+  const para = password.split('')
+  const res = para
+    .map((letter, indx) => {
+      return letter == char && indx+1 == rangeStart || letter == char && indx+1 == rangeEnd;
+    })
+    .filter(r => !!r);
+  return res.length == 1;
 }
