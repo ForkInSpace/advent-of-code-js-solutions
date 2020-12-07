@@ -3,9 +3,8 @@ const fs = require('fs');
 (async function(){
   const rawInputs = await fetchInputs();
   const inputArray = inputToArray(rawInputs);
-  const fuels = calcFuelRequredByEachModule(inputArray);
-  const totalSum = sum(fuels);
-  console.log(totalSum);
+  const res = validatePasswords(inputArray);
+  console.log(res);
 })()
 
 function fetchInputs() {
@@ -19,15 +18,24 @@ function fetchInputs() {
 }
 
 function inputToArray(content) {
-    return content.split('\n');
+  return content.split('\n');
 }
 
-function calcFuelRequredByEachModule(args) {
-  return args.map(moduleMass => {
-    return Math.floor(moduleMass/3) - 2;
-  })
+function validatePasswords(arr) {
+  return arr
+    .map(item => {
+      let range = item.split(' ')[0];
+      let char = item.split(':')[0].split(' ')[1];
+      let password = item.split(' ')[2];
+      console.log(range, char, password);
+
+      return tryMatch(password.trim(), char, range.split('-')[0], range.split('-')[1]);
+    })
+    .filter(item => !!item)
+    .length;
 }
 
-function sum(moduleFuels) {
-  return moduleFuels.reduce((total, fuel) => total + fuel);
+function tryMatch(password, char, rangeStart, rangeEnd) {
+  const pattern = new RegExp(`^[^${char}]*(?:${char}[^${char}]*){${rangeStart},${rangeEnd}}$`)
+  return pattern.test(password);
 }
