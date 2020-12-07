@@ -3,7 +3,7 @@ const fs = require('fs');
 (async function(){
   const rawInputs = await fetchInputs();
   const inputArray = inputToArray(rawInputs);
-  const res = validatePasswords(inputArray);
+  const res = findTrees(inputArray);
   console.log(res);
 })()
 
@@ -18,24 +18,30 @@ function fetchInputs() {
 }
 
 function inputToArray(content) {
-  return content.split('\n');
+  const arr = content.split('\n');
+  result = arr.map(str => str.split(''));
+  return result;
 }
 
-function validatePasswords(arr) {
-  return arr
-    .map(item => {
-      let range = item.split(' ')[0];
-      let char = item.split(':')[0].split(' ')[1];
-      let password = item.split(' ')[2];
-      console.log(range, char, password);
+function findTrees(arr) {
+  let xUnits = 3;
+  let yUnits = 1;
 
-      return tryMatch(password.trim(), char, range.split('-')[0], range.split('-')[1]);
-    })
-    .filter(item => !!item)
-    .length;
-}
+  let numberOfTrees = 0;
+  let x = 0;
+  let y = 0;
+  
+  while (y < arr.length) {
+    const adjustedX = x % arr[0].length;
+    const coordinate = arr[y][adjustedX];
 
-function tryMatch(password, char, rangeStart, rangeEnd) {
-  const pattern = new RegExp(`^[^${char}]*(?:${char}[^${char}]*){${rangeStart},${rangeEnd}}$`)
-  return pattern.test(password);
+    if (coordinate === '#') { 
+      numberOfTrees++;
+    }
+
+    x += xUnits;
+    y += yUnits;
+  }
+
+  return numberOfTrees;
 }
