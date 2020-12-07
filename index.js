@@ -3,7 +3,7 @@ const fs = require('fs');
 (async function(){
   const rawInputs = await fetchInputs();
   const inputArray = inputToArray(rawInputs);
-  const res = findTrees(inputArray);
+  const res = multipleSlopes(inputArray);
   console.log(res);
 })()
 
@@ -23,9 +23,7 @@ function inputToArray(content) {
   return result;
 }
 
-function findTrees(arr) {
-  let xUnits = 3;
-  let yUnits = 1;
+function singleSlope(arr, xUnits, yUnits) {
 
   let numberOfTrees = 0;
   let x = 0;
@@ -44,4 +42,19 @@ function findTrees(arr) {
   }
 
   return numberOfTrees;
+}
+
+function multipleSlopes(arr) {
+  let xUnits = [1, 3 ,5 ,7, 1];
+  let yUnits = [1, 1, 1, 1, 2];
+
+  let numberOfTrees = new Array(5).fill(0);
+
+  for (let i = 0; i < xUnits.length; i++) {
+    let totalTrees = singleSlope(arr, xUnits[i], yUnits[i]);
+
+    numberOfTrees[i] = totalTrees;
+  }
+  
+  return numberOfTrees.reduce((a, b) => a * b);
 }
