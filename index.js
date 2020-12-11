@@ -10,6 +10,16 @@ const requiredFields = [
   'pid'
 ];
 
+const possibleEyeColors = [
+  'amb',
+  'blu',
+  'brn',
+  'gry',
+  'grn',
+  'hzl',
+  'oth'
+];
+
 (async () => {
   const rawInputs = await fetchInputs();
   const arr = toArray(rawInputs);
@@ -49,15 +59,55 @@ function parseArr(arr) {
 }
 
 function validatePassport(passport, requiredFields) {
-  // refactor the mess
-  if (Object.keys(passport).length == 8) {
-    return true;
-  } else if (Object.keys(passport).length == 7) {
-    return Object
-    .keys(passport)
-    .every(e => {
-      return requiredFields.includes(e)
-    });
+  // TODO refactor the mess
+  if (Object.keys(passport).every(e => requiredFields.includes(e) || e === 'cid')) {
+    const validatedFields = [];
+
+    Object.entries(passport)
+      .forEach(entry => {
+        const [key, value] = entry;
+        
+        switch (key) {
+          case ('byr'):
+            if (Number(value) <= 2002 && Number(value) >= 1920) {
+              validatedFields.push(value);
+            }
+            break;
+          case ('iyr'):
+            if (Number(value) <= 2020 && Number(value) >= 2010) {
+              validatedFields.push(value);
+            }
+            break;
+          case ('eyr'):
+            if (Number(value) <= 2030 && Number(value) >= 2020) {
+              validatedFields.push(value);
+            }
+            break;
+          case ('hgt'):
+            if (value.includes('cm') && Number(value.split('cm')[0]) <= 193 && Number(value.split('cm')[0]) >= 150 ||
+            value.includes('in') && Number(value.split('in')[0]) <= 76 && Number(value.split('in')[0]) >= 59)
+              validatedFields.push(value);
+            break;
+          case ('hcl'):
+            if (/^#[0-9a-f]{6}/i.test(value)) {
+              validatedFields.push(value);
+            }
+            break;
+          case ('ecl'):
+            if (possibleEyeColors.includes(value)) {
+              validatedFields.push(value);
+            }
+            break;
+          case ('pid'):
+            if (/^\d{9}$/.test(value)) {
+              validatedFields.push(value);
+            }
+            break;
+          default:
+            break;
+        }
+      })
+      return validatedFields.length >= 7;
   } else {
     return false;
   }
