@@ -9,7 +9,7 @@ const seatIds = [];
   const rawInputs = await fetchInputs();
   const boardingPasses = toArray(rawInputs);
   await findAllSeats(boardingPasses);
-  sortAndSpitOutTheHighestSeatId(seatIds);
+  findTheMissingSeat(await sortSeatIds(seatIds));
 })()
 
 function fetchInputs() {
@@ -67,7 +67,12 @@ const findSeat = (pass) => {
   return seatIds.push((localRows[0] * 8) + localColumns[0]);
 }
 
-const sortAndSpitOutTheHighestSeatId = (seatIds) => {
-  let sorted = seatIds.sort((a, b) => a - b);
-  console.log(sorted.pop());
+const sortSeatIds = (seatIds) => {
+  return seatIds.sort((a, b) => a - b);
+}
+
+const findTheMissingSeat = (sortedArr) => {
+  let seat = sortedArr
+    .find((id, indx) => sortedArr[indx+1] - id > 1) + 1;
+  console.log(seat);
 }
