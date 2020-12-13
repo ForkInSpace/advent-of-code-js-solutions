@@ -1,15 +1,10 @@
 const fs = require('fs');
 
-const rows = [...Array(128).keys()];
-const columns = [...Array(9).keys()];
-
-const seatIds = [];
-
 (async () => {
   const rawInputs = await fetchInputs();
-  const boardingPasses = toArray(rawInputs);
-  await findAllSeats(boardingPasses);
-  findTheMissingSeat(await sortSeatIds(seatIds));
+  const parsed = toArray(rawInputs);
+  const res = calculateSumOfTheCounts(parsed);
+  console.log(res);
 })()
 
 function fetchInputs() {
@@ -22,57 +17,26 @@ function fetchInputs() {
   })
 }
 
-const toArray = (content) => {
-  return content.split('\n');
+const toArray = (input) => {
+  const arr = input.split(/\n\s*\n/);
+  return arr.map(a => a.replace(/\n/g, ' ').split(' '))
 }
 
-const findAllSeats = (boardingPasses) => {
-  boardingPasses.map(pass => {
-    findSeat(pass);
-  })
+const calculateSumOfTheCounts = (answers) => {
+  return answers
+    .map(answer => parseAnswer(answer))
+    .reduce((oldVal, newVal) => oldVal + newVal);
 }
 
-const findSeat = (pass) => {
-  const passIdArr = pass.split('');
-  
-  // deep copy arrays
-  let localRows = JSON.parse(JSON.stringify(rows));
-  let localColumns = JSON.parse(JSON.stringify(columns));
+const parseAnswer = (answer) => {
+  const split = answer.map(i => i.split(''))
+  const flat = split.flat();
 
-  let halfRows;
-  let halfColumns;
-
-  passIdArr.forEach(char => {
-    switch (char) {
-      case ('F'):
-        halfRows = Math.floor(localRows.length / 2);
-        localRows.splice(-halfRows);
-        break;
-      case ('B'):
-        halfRows = Math.floor(localRows.length / 2);
-        localRows.splice(0, halfRows);
-        break;
-      case ('L'):
-        halfColumns = Math.floor(localColumns.length / 2);
-        localColumns.splice(-halfColumns);
-        break;
-      case ('R'):
-        halfColumns = Math.floor(localColumns.length / 2);
-        localColumns.splice(0, halfColumns);
-        break;
-      default:
-        break;
-    }
-  })
-  return seatIds.push((localRows[0] * 8) + localColumns[0]);
-}
-
-const sortSeatIds = (seatIds) => {
-  return seatIds.sort((a, b) => a - b);
-}
-
-const findTheMissingSeat = (sortedArr) => {
-  let seat = sortedArr
-    .find((id, indx) => sortedArr[indx+1] - id > 1) + 1;
-  console.log(seat);
+  // remove dublicates
+  const res = flat
+    .filter((answer, indx) => 
+      flat.indexOf(answer) === indx
+    );
+    
+  return res.length;
 }
