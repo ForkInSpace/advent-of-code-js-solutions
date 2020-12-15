@@ -3,8 +3,7 @@ const fs = require('fs');
 (async () => {
   const rawInputs = await fetchInputs();
   const parsed = toArray(rawInputs);
-  const res = calculateSumOfTheCounts(parsed);
-  console.log(res);
+  calculateSumOfTheCounts(parsed);
 })()
 
 function fetchInputs() {
@@ -23,20 +22,32 @@ const toArray = (input) => {
 }
 
 const calculateSumOfTheCounts = (answers) => {
-  return answers
+  let res = answers
     .map(answer => parseAnswer(answer))
-    .reduce((oldVal, newVal) => oldVal + newVal);
+    .reduce((prev, current) => prev + current);
+  console.log(res);
 }
 
-const parseAnswer = (answer) => {
-  const split = answer.map(i => i.split(''))
-  const flat = split.flat();
 
-  // remove dublicates
-  const res = flat
-    .filter((answer, indx) => 
-      flat.indexOf(answer) === indx
-    );
-    
-  return res.length;
+
+const parseAnswer = (answer) => {
+  let count = 0;
+
+  if (answer.length == 1) {
+    count += answer[0].length;
+  } else if (answer.every(letter => letter.length === 1) && answer.every(an => an === answer[0])) {
+    count += answer[0].length;
+  } else if (answer.every(an => an.length === 1) && !answer.every(an => an === answer[0])) {
+    // Skip, nothing to count here
+  } else if (!answer.every(letter => letter.length === 1) && !answer.every(an => an === answer[0])) {
+    let splitAns = answer.map(a => a.split(''));
+    let [first, ...rest] = splitAns
+  
+    let matches = first.filter(char => rest[0].includes(char));
+
+    count += matches.length;
+  } else {
+    console.log('Something wrong with the answer group: ', answer);
+  }
+  return count;
 }
